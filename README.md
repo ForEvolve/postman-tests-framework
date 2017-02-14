@@ -51,3 +51,5 @@ You can set different targets for different environments.
 
 ## What's next?
 There is some "only I can use it" parts that I will extract and some parts that I will refactor when the need arises.
+
+I will do my best to keep this project up to date and clean it up a little more.
