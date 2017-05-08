@@ -1,17 +1,18 @@
-(function (window, undefined) {
+(function (undefined) {
     /**
      * Create a new instance of the test framework.
      * 
      * @param {any} postmanWindow the current postman window, should be `this` in you tests scripts.
-     * @param {any} postmanTestsArray the postman `tests` object.
+     * @param {any} customOptions some optional configurations.
      * @returns the test framework, connected to the current postman window.
      */
-    var postmanTestFramework = function (postmanWindow, postmanTestsArray) {
+    var postmanTestFramework = function (postmanWindow, customOptions) {
         // Private variables
-        var tests = postmanTestsArray;
+        var tests = postmanWindow.tests;
         var postman = postmanWindow.postman;
         var responseCode = postmanWindow.responseCode;
         var responseBody = postmanWindow.responseBody;
+        var request = postmanWindow.request;
         var requestData = request.data;
 
         // "const"
@@ -25,6 +26,13 @@
             shouldBeEmpty: "Response should be empty",
             shouldBeJson: "Response should be JSON"
         };
+
+        // Options
+        var defaultOptions = {
+            expectedFastResponseTime: 200
+        };
+        var environmentOptions = loadEnvironmentOptions(postman);
+        var options = _.defaults(customOptions || {}, environmentOptions, defaultOptions);
 
         // Public API
         var framework = {
@@ -98,7 +106,7 @@
                             return result;
                         },
                         fast: function () {
-                            var expectedResponseTime = postman.getEnvironmentVariable("ExpectedFastResponseTime");
+                            var expectedResponseTime = options.expectedFastResponseTime;
                             var text = stringFormat(constant.responseTimeShouldBe, expectedResponseTime);
                             var result = responseTime < expectedResponseTime;
                             tests[text] = result;
@@ -197,10 +205,10 @@
                     }
                 }
             }
-        }
+        };
 
         // Set parsed json response
-        framework.response.jsonData = framework.response.hasBody() ? JSON.parse(responseBody) : null;
+        framework.response.jsonData = framework.response.hasBody() && framework.utils.isJson(responseBody) ? JSON.parse(responseBody) : null;
 
         // Set parsed json request
         framework.request.jsonData = framework.request.hasBody() && framework.utils.isJson(requestData) ? JSON.parse(requestData) : null;
@@ -208,6 +216,16 @@
         // Return the public API
         return framework;
     };
+
+
+    function loadEnvironmentOptions(postman) {
+        var options = {};
+        options.expectedFastResponseTime = postman.getEnvironmentVariable("ExpectedFastResponseTime");
+        if (!_.isEmpty(options.expectedFastResponseTime)) {
+            options.expectedFastResponseTime = parseInt(options.expectedFastResponseTime);
+        }
+        return options;
+    }
 
     // Utility
     function stringFormat(stringToFormat) {
@@ -241,8 +259,7 @@
             .substring(1);
     }
 
-    // Attach the test framework to "window"
-    window.ForEvolve = {
+    return {
         Tests: {
             Engine: postmanTestFramework,
             Utils: {
@@ -250,5 +267,5 @@
             }
         }
     };
-}(window));
+}());
 
