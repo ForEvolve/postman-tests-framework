@@ -82,4 +82,4 @@ You can define options per test basis or globally.
 This is a work in progress with some "only I can use it" parts that I will extract, remove or refactor in the future. This is still usable by anyone that want to. To be really usefull, I will obviously need to write some more documentation.
 
 I will do my best to keep this project up to date and to clean it up a little more before adding new features.
-This should not be to hard since I plan to use it myself.
+This should not be to hard since I am using it myself.
