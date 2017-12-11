@@ -1,3 +1,6 @@
+# Use chai instead
+**With the added support for [Chai JS](http://chaijs.com), this library is no longer needed.**
+
 # Postman test framework
 A little Postman test framework to help avoid "messy-er" code.
 
